@@ -40,6 +40,7 @@ export interface Student {
   yearOfStudy?: number;
   placementId?: string;
   status?: AttachmentStatus;
+  universitySupervisorName?: string;
 }
 
 // ─── Placement ─────────────────────────────────────────────────────────────

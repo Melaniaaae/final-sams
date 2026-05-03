@@ -30,7 +30,7 @@ def list_students(
     return {"data": result}
 
 
-@router.get("/{reg_no}")
+@router.get("/{reg_no:path}")
 def get_student(
     reg_no: str,
     current_user: dict = Depends(get_current_user),
@@ -53,6 +53,11 @@ def get_student(
     except Exception:
         placement = {}
 
+    from app.models.staff import Staff
+    staff = None
+    if student.staff_id:
+        staff = db.query(Staff).filter(Staff.staff_id == student.staff_id).first()
+
     return {
         "data": {
             "id": student.reg_no,
@@ -68,13 +73,15 @@ def get_student(
             "stationSupervisorName": placement.get("stationSupervisorName"),
             "stationSupervisorPhone": placement.get("stationSupervisorPhone"),
             "universitySupervisorId": student.staff_id,
+            "universitySupervisorName": staff.name if staff else "Not assigned yet",
+            "universitySupervisorPhone": staff.phone_number if staff else "—",
             "yearOfStudy": 3,
             "status": placement.get("status", "pending"),
         }
     }
 
 
-@router.patch("/{reg_no}")
+@router.patch("/{reg_no:path}")
 def update_student(
     reg_no: str,
     data: StudentUpdate,
@@ -89,7 +96,7 @@ def update_student(
     return {"data": {"reg_no": updated.reg_no, "name": updated.name}}
 
 
-@router.get("/{reg_no}/placement-progress")
+@router.get("/{reg_no:path}/placement-progress")
 def get_placement_progress(
     reg_no: str,
     current_user: dict = Depends(get_current_user),
@@ -108,7 +115,7 @@ def get_placement_progress(
     return {"data": progress}
 
 
-@router.get("/{reg_no}/notifications")
+@router.get("/{reg_no:path}/notifications")
 def get_notifications(
     reg_no: str,
     current_user: dict = Depends(require_student),
@@ -126,7 +133,23 @@ def get_notifications(
     return {"data": notifications}
 
 
-@router.patch("/{reg_no}/assign-supervisor")
+@router.patch("/{reg_no:path}/notifications/{notif_id}/read", status_code=204)
+def mark_notification_read(
+    reg_no: str,
+    notif_id: str,
+    current_user: dict = Depends(require_student),
+):
+    """
+    Dummy endpoint to satisfy the frontend's mark-as-read request.
+    In this MVP, notifications are dynamically derived.
+    """
+    if current_user["id"] != reg_no:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Access denied")
+    return
+
+
+@router.patch("/{reg_no:path}/assign-supervisor")
 def assign_supervisor(
     reg_no: str,
     body: dict,
@@ -138,7 +161,7 @@ def assign_supervisor(
     return svc(db, reg_no, body.get("supervisorId", ""))
 
 
-@router.get("/{reg_no}/documents")
+@router.get("/{reg_no:path}/documents")
 def get_documents(
     reg_no: str,
     current_user: dict = Depends(get_current_user),

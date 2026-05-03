@@ -60,6 +60,10 @@ def get_all_students(
             .order_by(Placement.created_at.desc())
             .first()
         )
+        from app.models.staff import Staff
+        staff = None
+        if s.staff_id:
+            staff = db.query(Staff).filter(Staff.staff_id == s.staff_id).first()
         attachment_status = _derive_status(placement)
         items.append({
             "id": s.reg_no,
@@ -71,6 +75,8 @@ def get_all_students(
             "yearOfStudy": 3,  # can be added to Student model later
             "status": attachment_status,
             "placementId": placement.placement_id if placement else None,
+            "universitySupervisorName": staff.name if staff else "Not assigned",
+            "company": placement.company.company_name if placement and placement.company else "Unassigned",
         })
 
     return {"items": items, "total": total, "page": page, "pageSize": page_size}
@@ -85,7 +91,25 @@ def get_placement_progress(db: Session, reg_no: str) -> dict:
         .first()
     )
     if not placement:
-        raise HTTPException(status_code=404, detail="No placement found for this student")
+        return {
+            "placement": {
+                "id": "",
+                "studentId": reg_no,
+                "companyId": "",
+                "companyName": "Unassigned",
+                "department": "",
+                "location": "N/A",
+                "startDate": str(date.today()),
+                "endDate": str(date.today()),
+                "status": "pending",
+                "stationSupervisorName": "N/A",
+                "stationSupervisorPhone": "N/A",
+            },
+            "daysTotal": 0,
+            "daysElapsed": 0,
+            "daysRemaining": 0,
+            "completionPercent": 0,
+        }
 
     today = date.today()
     start = placement.start_date
@@ -93,7 +117,7 @@ def get_placement_progress(db: Session, reg_no: str) -> dict:
 
     days_total = max((end - start).days, 1)
     days_elapsed = max(min((today - start).days, days_total), 0)
-    days_remaining = max((end - today).days, 0)
+    days_remaining = days_total - days_elapsed
     completion_percent = min(round((days_elapsed / days_total) * 100), 100)
 
     return {

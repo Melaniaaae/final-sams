@@ -74,10 +74,15 @@
         <div class="card-head">
           <span class="card-title">Geographic Distribution</span>
         </div>
-        <div class="geo-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
-          <div *ngFor="let geo of kpis()?.geographicDistribution" style="display: flex; justify-content: space-between; padding: 8px; background: #f9fafa; border-radius: 6px;">
-            <span style="font-weight: 500; color: #0A231C;">{{ geo.county }}</span>
-            <span style="color: #6C7A77;">{{ geo.count }} students</span>
+        <div class="geo-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+          <div *ngFor="let geo of kpis()?.geographicDistribution" style="display: flex; flex-direction: column; gap: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 13px;">
+              <span style="font-weight: 500; color: #0A231C;">{{ geo.county }}</span>
+              <span style="color: #6C7A77;">{{ geo.count }} students</span>
+            </div>
+            <div class="prog-track" style="height: 6px; border-radius: 3px;">
+              <div class="prog-fill" [style.width.%]="(geo.count / kpis()!.totalStudents) * 100" style="border-radius: 3px;"></div>
+            </div>
           </div>
         </div>
       </div>

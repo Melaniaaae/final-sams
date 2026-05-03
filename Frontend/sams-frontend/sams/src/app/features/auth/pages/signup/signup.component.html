@@ -248,6 +248,21 @@
               </span>
             </div>
 
+            <!-- Station supervisor phone -->
+            <div class="field" [class.error]="supervisorPhoneCtrl.invalid && supervisorPhoneCtrl.touched">
+              <label class="field-label" for="supervisorPhone">Station Supervisor Phone</label>
+              <input
+                id="supervisorPhone"
+                type="text"
+                class="field-input"
+                formControlName="stationSupervisorPhone"
+                placeholder="E.g., +254700000000"
+              />
+              <span class="field-error" *ngIf="supervisorPhoneCtrl.touched && supervisorPhoneCtrl.hasError('required')">
+                Supervisor phone is required.
+              </span>
+            </div>
+
             <!-- Dates -->
             <div class="field-row">
               <div class="field" [class.error]="startCtrl.invalid && startCtrl.touched">

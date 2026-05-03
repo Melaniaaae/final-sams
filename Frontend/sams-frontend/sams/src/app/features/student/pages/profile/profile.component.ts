@@ -77,6 +77,16 @@ export class ProfileComponent implements OnInit {
             };
         }
 
+        if (this.student) {
+            this.universitySupervisor = {
+                id: (this.student as any).universitySupervisorId || 'sup-2',
+                name: (this.student as any).universitySupervisorName || 'Not assigned yet',
+                phone: (this.student as any).universitySupervisorPhone || '—',
+                email: '—',
+                type: 'university'
+            };
+        }
+
         this.isLoading = false;
       },
       error: () => {

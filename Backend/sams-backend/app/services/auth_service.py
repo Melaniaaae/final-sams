@@ -36,7 +36,7 @@ def register_student(db: Session, data: StudentRegisterSchema) -> Student:
         name=data.name,
         email=data.email,
         phone_number=data.phone,
-        department="Unassigned", # Frontend doesn't provide this currently
+        department="Software Engineering", # Mock data as requested
         hashed_password=hash_password(data.password),
         staff_id=None,
     )
@@ -52,10 +52,17 @@ def register_student(db: Session, data: StudentRegisterSchema) -> Student:
             town_city=data.location.get("city", "Unknown"),
             county=data.location.get("county", "Unknown"),
             contact_person_name=data.stationSupervisor,
-            contact_person_phone="Unknown" # Provided via frontend later or missing
+            contact_person_phone=data.stationSupervisorPhone
         )
         db.add(company)
         db.flush() # flush to get company_id
+    else:
+        if data.stationSupervisor:
+            company.contact_person_name = data.stationSupervisor
+        if data.stationSupervisorPhone:
+            company.contact_person_phone = data.stationSupervisorPhone
+        db.add(company)
+        db.flush()
 
     # 3. Create Placement
     start_date = datetime.strptime(data.startDate, "%Y-%m-%d").date()
@@ -102,76 +109,61 @@ def register_staff(db: Session, data: StaffRegisterSchema) -> Staff:
 def login_user(db: Session, data: LoginSchema) -> dict:
     """
     Authenticates either a Student or Staff member.
-    Tries student first, then staff, based on role hint.
+    Searches both tables to be forgiving of frontend role selections.
     """
     from app.core.security import verify_password, create_access_token
 
-    email     = data.email.strip().lower()
-    role_hint = (data.role or "").lower().strip()
+    email = data.email.strip().lower()
 
     # ── Try student ───────────────────────────────────────────────────────
-    if role_hint in ("student", ""):
-        student = db.query(Student).filter(
-            Student.email == email
-        ).first()
-
-        if student:
-            if not verify_password(data.password, student.hashed_password):
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Incorrect email or password",
-                )
-            token = create_access_token({
-                "sub":  student.email,
-                "role": "student",
-                "id":   student.reg_no,
-            })
-            return {
-                "access_token": token,
-                "token_type":   "bearer",
-                "user": {
-                    "id":                 student.reg_no,
-                    "name":               student.name,
-                    "email":              student.email,
-                    "role":               "student",
-                    "registrationNumber": student.reg_no,
-                },
-            }
-        elif role_hint == "student":
-            # Role was explicitly "student" but not found
+    student = db.query(Student).filter(Student.email == email).first()
+    if student:
+        if not verify_password(data.password, student.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect email or password",
             )
+        token = create_access_token({
+            "sub":  student.email,
+            "role": "student",
+            "id":   student.reg_no,
+        })
+        return {
+            "access_token": token,
+            "token_type":   "bearer",
+            "user": {
+                "id":                 student.reg_no,
+                "name":               student.name,
+                "email":              student.email,
+                "role":               "student",
+                "registrationNumber": student.reg_no,
+            },
+        }
 
     # ── Try staff (coordinator / lecturer) ────────────────────────────────
-    if role_hint in ("coordinator", "lecturer", ""):
-        staff = db.query(Staff).filter(
-            Staff.email == email
-        ).first()
-
-        if staff:
-            if not verify_password(data.password, staff.hashed_password):
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Incorrect email or password",
-                )
-            token = create_access_token({
-                "sub":  staff.email,
-                "role": staff.role.value,
-                "id":   staff.staff_id,
-            })
-            return {
-                "access_token": token,
-                "token_type":   "bearer",
-                "user": {
-                    "id":                 staff.staff_id,
-                    "name":               staff.name,
-                    "email":              staff.email,
-                    "role":               staff.role.value,
-                    "registrationNumber": None,
-                },
-            }
+    staff = db.query(Staff).filter(Staff.email == email).first()
+    if staff:
+        if not verify_password(data.password, staff.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+            )
+        token = create_access_token({
+            "sub":  staff.email,
+            "role": staff.role.value,
+            "id":   staff.staff_id,
+        })
+        return {
+            "access_token": token,
+            "token_type":   "bearer",
+            "user": {
+                "id":                 staff.staff_id,
+                "name":               staff.name,
+                "email":              staff.email,
+                "role":               staff.role.value,
+                "registrationNumber": None,
+            },
+        }
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

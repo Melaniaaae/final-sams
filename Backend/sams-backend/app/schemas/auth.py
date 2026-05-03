@@ -13,6 +13,7 @@ class StudentRegisterSchema(BaseModel):
     company: str
     location: dict          # { "county": str, "city": str }
     stationSupervisor: str
+    stationSupervisorPhone: str
     startDate: str
     endDate: str
     role: str = "student"

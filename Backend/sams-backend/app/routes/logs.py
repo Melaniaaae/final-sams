@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, UploadFile, File
+from fastapi import APIRouter, Depends, Query, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -38,15 +38,23 @@ def list_logs(
 
 @router.post("", status_code=201)
 def submit_log(
-    data: WeeklyLogCreate,
+    weekNumber: int = Form(...),
+    activityDescription: str = Form(...),
+    file: Optional[UploadFile] = File(None),
     current_user: dict = Depends(require_student),
     db: Session = Depends(get_db),
 ):
     """
-    Student submits a weekly log.
+    Student submits a weekly log (with optional file).
     Angular path: POST /api/v1/logs
     """
-    log = log_service.create_log(db, current_user["id"], data)
+    log = log_service.create_log(
+        db, 
+        current_user["id"], 
+        week_no=weekNumber, 
+        activity_description=activityDescription, 
+        file=file
+    )
     return {"data": log}
 
 

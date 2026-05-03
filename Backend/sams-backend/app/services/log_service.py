@@ -71,50 +71,66 @@ def get_logs_by_student(
     }
 
 
-def create_log(db: Session, reg_no: str, data: WeeklyLogCreate) -> dict:
+def create_log(
+    db: Session, 
+    reg_no: str, 
+    week_no: int, 
+    activity_description: str, 
+    file: UploadFile = None
+) -> dict:
     """Submit a new weekly log for the authenticated student."""
-    # Verify placement belongs to this student
-    placement = db.query(Placement).filter(
-        Placement.placement_id == data.placement_id,
-        Placement.reg_no == reg_no,
-    ).first()
+    # Find active placement
+    placement = (
+        db.query(Placement)
+        .filter(Placement.reg_no == reg_no)
+        .order_by(Placement.created_at.desc())
+        .first()
+    )
     if not placement:
-        raise HTTPException(status_code=403, detail="Placement not found or unauthorized")
+        raise HTTPException(status_code=403, detail="Placement not found")
 
     # Check existing log
     existing = db.query(WeeklyLog).filter(
-        WeeklyLog.placement_id == data.placement_id,
-        WeeklyLog.week_no == data.week_no,
+        WeeklyLog.placement_id == placement.placement_id,
+        WeeklyLog.week_no == week_no,
     ).first()
     
     if existing:
         if existing.status != LogStatus.missing:
             raise HTTPException(
                 status_code=409,
-                detail=f"Log for week {data.week_no} already exists and is {existing.status.value}",
+                detail=f"Log for week {week_no} already exists and is {existing.status.value}",
             )
         # Update the pre-generated missing log
-        existing.activity_description = data.activity_description
-        existing.submission_date = data.submission_date
-        existing.station_supervisor_name = data.station_supervisor_name
-        existing.station_supervisor_phone = data.station_supervisor_phone
+        existing.activity_description = activity_description
+        existing.submission_date = date.today()
+        existing.station_supervisor_name = ""
+        existing.station_supervisor_phone = ""
         existing.status = LogStatus.submitted
         log = existing
     else:
         log = WeeklyLog(
-            placement_id=data.placement_id,
+            placement_id=placement.placement_id,
             company_id=placement.company_id,
-            week_no=data.week_no,
-            activity_description=data.activity_description,
-            submission_date=data.submission_date,
-            station_supervisor_name=data.station_supervisor_name,
-            station_supervisor_phone=data.station_supervisor_phone,
+            week_no=week_no,
+            activity_description=activity_description,
+            submission_date=date.today(),
+            station_supervisor_name="",
+            station_supervisor_phone="",
             status=LogStatus.submitted,
         )
         db.add(log)
         
     db.commit()
     db.refresh(log)
+    
+    # Handle optional file upload
+    if file:
+        file_path = _save_upload(file, "logbooks")
+        log.logbook_file_upload = file_path
+        db.commit()
+        db.refresh(log)
+        
     return _log_to_dict(log, placement)
 
 

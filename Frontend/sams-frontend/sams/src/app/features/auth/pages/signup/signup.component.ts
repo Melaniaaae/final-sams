@@ -65,6 +65,7 @@ export class SignupComponent {
     county:             ['', Validators.required],
     city:               ['', Validators.required],
     stationSupervisor:  ['', Validators.required],
+    stationSupervisorPhone: ['', Validators.required],
     startDate:          ['', Validators.required],
     endDate:            ['', [Validators.required, endAfterStart]],
   });
@@ -78,6 +79,7 @@ export class SignupComponent {
   get countyCtrl()     { return this.form.controls.county; }
   get cityCtrl()       { return this.form.controls.city; }
   get supervisorCtrl() { return this.form.controls.stationSupervisor; }
+  get supervisorPhoneCtrl() { return this.form.controls.stationSupervisorPhone; }
   get startCtrl()      { return this.form.controls.startDate; }
   get endCtrl()        { return this.form.controls.endDate; }
 
@@ -137,6 +139,7 @@ export class SignupComponent {
         city:   this.form.value.city!.trim(),
       },
       stationSupervisor:  this.form.value.stationSupervisor!.trim(),
+      stationSupervisorPhone: this.form.value.stationSupervisorPhone!.trim(),
       startDate:          this.form.value.startDate!,
       endDate:            this.form.value.endDate!,
       role:               'student',

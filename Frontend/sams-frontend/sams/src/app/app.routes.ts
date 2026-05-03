@@ -23,28 +23,28 @@ export const routes: Routes = [
     children: [
       // ── Student pages ─────────────────────────────────────
       {
-        path: 'dashboard',
+        path: 'student/dashboard',
         loadComponent: () =>
           import('./features/student/pages/dashboard/dashboard.component').then(
             (m) => m.StudentDashboardComponent
           ),
       },
       {
-        path: 'logbook',
+        path: 'student/logbook',
         loadComponent: () =>
           import('./features/student/pages/logbook/logbook.component').then(
             (m) => m.LogbookComponent
           ),
       },
       {
-        path: 'profile',
+        path: 'student/profile',
         loadComponent: () =>
           import('./features/student/pages/profile/profile.component').then(
             (m) => m.ProfileComponent
           ),
       },
       {
-        path: 'documents',
+        path: 'student/documents',
         loadComponent: () =>
           import('./features/student/pages/documents/documents.component').then(
             (m) => m.DocumentsComponent
@@ -52,21 +52,28 @@ export const routes: Routes = [
       },
       // ── Coordinator pages ─────────────────────────────────
       {
-        path: 'students',
+        path: 'coordinator/dashboard',
+        loadComponent: () =>
+          import('./features/coordinator/pages/dashboard/coordinator-dashboard.component').then(
+            (m) => m.CoordinatorDashboardComponent
+          ),
+      },
+      {
+        path: 'coordinator/students',
         loadComponent: () =>
           import('./features/coordinator/pages/students/students.component').then(
             (m) => m.StudentsComponent
           ),
       },
       {
-        path: 'lecturers',
+        path: 'coordinator/lecturers',
         loadComponent: () =>
           import('./features/coordinator/pages/lecturers/lecturers.component').then(
             (m) => m.LecturersComponent
           ),
       },
       {
-        path: 'companies',
+        path: 'coordinator/companies',
         loadComponent: () =>
           import('./features/coordinator/pages/companies/companies.component').then(
             (m) => m.CompaniesComponent

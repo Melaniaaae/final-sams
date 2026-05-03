@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { LogbookService } from '../../services/logbook.service';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
 
@@ -31,30 +32,31 @@ interface UploadSlot {
   templateUrl: './documents.component.html',
   styleUrls: ['./documents.component.scss'],
 })
-export class DocumentsComponent {
+export class DocumentsComponent implements OnInit {
   private auth = inject(AuthService);
+  private logbookService = inject(LogbookService);
 
-  // Mock existing documents — replace with API call
-  documents = signal<UploadedDocument[]>([
-    {
-      id: 'd1',
-      name: 'Introduction Letter.pdf',
-      type: 'introduction_letter',
-      sizeKb: 245,
-      uploadedAt: '2025-02-01',
-      status: 'approved',
-      url: '#',
-    },
-    {
-      id: 'd2',
-      name: 'Attachment Form KU-2025.pdf',
-      type: 'other',
-      sizeKb: 180,
-      uploadedAt: '2025-02-03',
-      status: 'approved',
-      url: '#',
-    },
-  ]);
+  documents = signal<UploadedDocument[]>([]);
+
+  ngOnInit(): void {
+    const studentId = this.auth.currentUser?.id ?? '';
+    this.logbookService.getWeeklyLogs(studentId).subscribe({
+      next: (logs) => {
+        const fileDocs: UploadedDocument[] = logs
+          .filter(l => !!l.fileUrl)
+          .map(l => ({
+            id: l.id,
+            name: `Logbook_Week_${l.weekNumber}.pdf`,
+            type: 'other',
+            sizeKb: 0,
+            uploadedAt: l.submittedAt ? l.submittedAt.split('T')[0] : '',
+            status: 'approved',
+            url: l.fileUrl!
+          }));
+        this.documents.set(fileDocs);
+      }
+    });
+  }
 
   uploadSlots = signal<UploadSlot[]>([
     { key: 'field_visit',   label: 'Field Visit Report',    hint: 'Signed by station supervisor — PDF only', file: null, uploading: false, done: false },

@@ -117,16 +117,16 @@ export class ShellComponent implements OnInit, OnDestroy {
     // Build nav items ONCE — icons are embedded strings, never recreated
     this.navItems = this.isCoordinator
       ? [
-          { label: 'Dashboard', route: '/dashboard', svgPath: ICONS['grid']     },
-          { label: 'Students',  route: '/students',  svgPath: ICONS['users']    },
-          { label: 'Lecturers', route: '/lecturers', svgPath: ICONS['grad']     },
-          { label: 'Companies', route: '/companies', svgPath: ICONS['building'] },
+          { label: 'Dashboard', route: '/coordinator/dashboard', svgPath: ICONS['grid']     },
+          { label: 'Students',  route: '/coordinator/students',  svgPath: ICONS['users']    },
+          { label: 'Lecturers', route: '/coordinator/lecturers', svgPath: ICONS['grad']     },
+          { label: 'Companies', route: '/coordinator/companies', svgPath: ICONS['building'] },
         ]
       : [
-          { label: 'Dashboard',      route: '/dashboard',  svgPath: ICONS['grid']   },
-          { label: 'Logbook',        route: '/logbook',    svgPath: ICONS['book']   },
-          { label: 'My Profile',     route: '/profile',    svgPath: ICONS['user']   },
-          { label: 'Document Vault', route: '/documents',  svgPath: ICONS['folder'] },
+          { label: 'Dashboard',      route: '/student/dashboard',  svgPath: ICONS['grid']   },
+          { label: 'Logbook',        route: '/student/logbook',    svgPath: ICONS['book']   },
+          { label: 'My Profile',     route: '/student/profile',    svgPath: ICONS['user']   },
+          { label: 'Document Vault', route: '/student/documents',  svgPath: ICONS['folder'] },
         ];
 
     // Track page title from router — manual subscription, no toSignal
