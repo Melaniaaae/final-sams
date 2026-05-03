@@ -1,0 +1,348 @@
+<div class="signup-page">
+
+  <!-- ── Left branding panel ─────────────────────────────────────── -->
+  <aside class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-logo">SAMS</div>
+      <h1 class="brand-title">Create Your<br>Student Account</h1>
+      <p class="brand-sub">
+        Register to track your industrial attachment, submit weekly
+        logs, and stay connected with your supervisors.
+      </p>
+
+      <!-- Step indicator -->
+      <div class="steps">
+        <div class="step" [class.done]="isStep2" [class.active]="isStep1">
+          <div class="step-circle">
+            <svg *ngIf="isStep2" width="14" height="14" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span *ngIf="isStep1">1</span>
+          </div>
+          <div class="step-label">Personal Details</div>
+        </div>
+
+        <div class="step-line" [class.done]="isStep2"></div>
+
+        <div class="step" [class.active]="isStep2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Placement Details</div>
+        </div>
+      </div>
+
+      <div class="brand-note">
+        Already have an account?
+        <a routerLink="/auth/login" class="brand-link">Sign in</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Right form panel ───────────────────────────────────────── -->
+  <main class="form-panel">
+    <div class="form-wrap">
+
+      <!-- Success state -->
+      <div class="success-card" *ngIf="successMsg()">
+        <div class="success-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+               stroke="#0A231C" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h3 class="success-title">You're registered!</h3>
+        <p class="success-sub">{{ successMsg() }}</p>
+      </div>
+
+      <ng-container *ngIf="!successMsg()">
+
+        <!-- Form header -->
+        <div class="form-header">
+          <h2 class="form-title">
+            {{ isStep1 ? 'Personal Details' : 'Placement Details' }}
+          </h2>
+          <p class="form-sub">
+            {{ isStep1
+              ? 'Fill in your student information below'
+              : 'Tell us about your attachment placement' }}
+          </p>
+        </div>
+
+        <!-- Step indicator (mobile) -->
+        <div class="step-pill">
+          Step {{ currentStep() }} of 2
+        </div>
+
+        <!-- Error alert -->
+        <div class="error-alert" *ngIf="errorMsg()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {{ errorMsg() }}
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+          <!-- ────────── STEP 1: Personal Details ────────── -->
+          <ng-container *ngIf="isStep1">
+
+            <!-- Full name -->
+            <div class="field" [class.error]="nameCtrl.invalid && nameCtrl.touched">
+              <label class="field-label" for="name">Full Name</label>
+              <input
+                id="name"
+                type="text"
+                class="field-input"
+                formControlName="name"
+                placeholder="e.g. Jane Muthoni Kamau"
+                autocomplete="name"
+              />
+              <span class="field-error"
+                    *ngIf="nameCtrl.touched && nameCtrl.hasError('required')">
+                Full name is required
+              </span>
+              <span class="field-error"
+                    *ngIf="nameCtrl.touched && nameCtrl.hasError('minlength')">
+                Name must be at least 3 characters
+              </span>
+            </div>
+
+            <!-- Registration number -->
+            <div class="field" [class.error]="regCtrl.invalid && regCtrl.touched">
+              <label class="field-label" for="reg">Registration Number</label>
+              <input
+                id="reg"
+                type="text"
+                class="field-input"
+                formControlName="registrationNumber"
+                placeholder="e.g. S13/07748/22"
+                autocomplete="off"
+              />
+            
+            </div>
+
+            <!-- Email -->
+            <div class="field" [class.error]="emailCtrl.invalid && emailCtrl.touched">
+              <label class="field-label" for="email">Email Address</label>
+              <input
+                id="email"
+                type="email"
+                class="field-input"
+                formControlName="email"
+                placeholder="you@university.ac.ke"
+                autocomplete="email"
+              />
+              <span class="field-error"
+                    *ngIf="emailCtrl.touched && emailCtrl.hasError('required')">
+                Email is required
+              </span>
+              <span class="field-error"
+                    *ngIf="emailCtrl.touched && emailCtrl.hasError('email')">
+                Enter a valid email address
+              </span>
+            </div>
+
+            <!-- Phone -->
+            <div class="field" [class.error]="phoneCtrl.invalid && phoneCtrl.touched">
+              <label class="field-label" for="phone">Phone Number</label>
+              <input
+                id="phone"
+                type="tel"
+                class="field-input"
+                formControlName="phone"
+                placeholder="e.g. 0712 345 678"
+                autocomplete="tel"
+              />
+              <span class="field-hint">Kenyan number starting with 07 or +254</span>
+              <span class="field-error"
+                    *ngIf="phoneCtrl.touched && phoneCtrl.hasError('required')">
+                Phone number is required
+              </span>
+              <span class="field-error"
+                    *ngIf="phoneCtrl.touched && phoneCtrl.hasError('pattern')">
+                Enter a valid Kenyan phone number
+              </span>
+            </div>
+
+            <button type="button" class="submit-btn" (click)="nextStep()">
+              Continue to Placement Details
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
+
+          </ng-container>
+
+          <!-- ────────── STEP 2: Placement Details ────────── -->
+          <ng-container *ngIf="isStep2">
+
+            <!-- Company -->
+            <div class="field" [class.error]="companyCtrl.invalid && companyCtrl.touched">
+              <label class="field-label" for="company">Company / Organisation</label>
+              <input
+                id="company"
+                type="text"
+                class="field-input"
+                formControlName="company"
+                placeholder="e.g. Safaricom PLC"
+              />
+              <span class="field-error"
+                    *ngIf="companyCtrl.touched && companyCtrl.hasError('required')">
+                Company name is required
+              </span>
+            </div>
+
+            <!-- Location: County + City -->
+            <div class="field-row">
+              <div class="field" [class.error]="countyCtrl.invalid && countyCtrl.touched">
+                <label class="field-label" for="county">County</label>
+                <select
+                  id="county"
+                  class="field-input field-select"
+                  formControlName="county"
+                >
+                  <option value="" disabled selected>Select county</option>
+                  <option *ngFor="let c of counties" [value]="c">{{ c }}</option>
+                </select>
+                <span class="field-error"
+                      *ngIf="countyCtrl.touched && countyCtrl.hasError('required')">
+                  County is required
+                </span>
+              </div>
+
+              <div class="field" [class.error]="cityCtrl.invalid && cityCtrl.touched">
+                <label class="field-label" for="city">City / Town</label>
+                <input
+                  id="city"
+                  type="text"
+                  class="field-input"
+                  formControlName="city"
+                  placeholder="e.g. Westlands"
+                />
+                <span class="field-error"
+                      *ngIf="cityCtrl.touched && cityCtrl.hasError('required')">
+                  City is required
+                </span>
+              </div>
+            </div>
+
+            <!-- Station supervisor -->
+            <div class="field" [class.error]="supervisorCtrl.invalid && supervisorCtrl.touched">
+              <label class="field-label" for="supervisor">Station Supervisor Name</label>
+              <input
+                id="supervisor"
+                type="text"
+                class="field-input"
+                formControlName="stationSupervisor"
+                placeholder="e.g. Mr. Brian Ochieng"
+              />
+              <span class="field-hint">The supervisor assigned to you at the company</span>
+              <span class="field-error"
+                    *ngIf="supervisorCtrl.touched && supervisorCtrl.hasError('required')">
+                Supervisor name is required
+              </span>
+            </div>
+
+            <!-- Dates -->
+            <div class="field-row">
+              <div class="field" [class.error]="startCtrl.invalid && startCtrl.touched">
+                <label class="field-label" for="startDate">Start Date</label>
+                <input
+                  id="startDate"
+                  type="date"
+                  class="field-input"
+                  formControlName="startDate"
+                  (change)="onStartDateChange()"
+                />
+                <span class="field-error"
+                      *ngIf="startCtrl.touched && startCtrl.hasError('required')">
+                  Start date is required
+                </span>
+              </div>
+
+              <div class="field" [class.error]="endCtrl.invalid && endCtrl.touched">
+                <label class="field-label" for="endDate">End Date</label>
+                <input
+                  id="endDate"
+                  type="date"
+                  class="field-input"
+                  formControlName="endDate"
+                />
+                <span class="field-error"
+                      *ngIf="endCtrl.touched && endCtrl.hasError('required')">
+                  End date is required
+                </span>
+                <span class="field-error"
+                      *ngIf="endCtrl.touched && endCtrl.hasError('endBeforeStart')">
+                  End date must be after start date
+                </span>
+              </div>
+            </div>
+<!-- Password -->
+<div class="field" [class.error]="passwordCtrl.invalid && passwordCtrl.touched">
+  <label class="field-label" for="password">Password</label>
+  <input
+    id="password"
+    type="password"
+    class="field-input"
+    formControlName="password"
+    placeholder="Create a password (min 6 characters)"
+    autocomplete="new-password"
+  />
+  <span class="field-hint">You will use this to log in after registration</span>
+  <span class="field-error"
+        *ngIf="passwordCtrl.touched && passwordCtrl.hasError('required')">
+    Password is required
+  </span>
+  <span class="field-error"
+        *ngIf="passwordCtrl.touched && passwordCtrl.hasError('minlength')">
+    Minimum 6 characters
+  </span>
+</div>
+
+            <!-- Action buttons -->
+            <div class="btn-row">
+              <button
+                type="button"
+                class="back-btn"
+                (click)="prevStep()"
+                [disabled]="isLoading()"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"/>
+                  <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Back
+              </button>
+
+              <button
+                type="submit"
+                class="submit-btn"
+                [disabled]="isLoading()"
+              >
+                <span *ngIf="!isLoading()">Create Account</span>
+                <span *ngIf="isLoading()" class="spinner"></span>
+              </button>
+            </div>
+
+          </ng-container>
+
+        </form>
+
+        <!-- Login link (bottom) -->
+        <p class="login-link">
+          Already registered?
+          <a routerLink="/auth/login">Sign in here</a>
+        </p>
+
+      </ng-container>
+    </div>
+  </main>
+
+</div>`

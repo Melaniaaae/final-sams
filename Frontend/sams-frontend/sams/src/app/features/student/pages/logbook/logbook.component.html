@@ -1,0 +1,140 @@
+<div class="logbook-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Weekly Logbook</h2>
+      <p class="page-sub">{{ submittedCount() }} of {{ totalWeeks() }} weeks submitted</p>
+    </div>
+    <div class="header-badge">
+      <span class="week-chip">Week {{ currentWeek() }}</span>
+    </div>
+  </div>
+
+  <div class="layout-grid">
+
+    <!-- ── Left: submission form ─────────────────────────────────────── -->
+    <section class="form-col">
+
+      <!-- Success banner -->
+      <div class="success-alert" *ngIf="submitSuccess()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Log submitted successfully!
+      </div>
+
+      <!-- Error banner -->
+      <div class="error-alert" *ngIf="errorMsg()">{{ errorMsg() }}</div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Submit Weekly Log</span>
+          <span class="week-range">{{ currentWeekRange() }}</span>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+          <!-- Week period (read-only) -->
+          <div class="field">
+            <label class="field-label">Week Period</label>
+            <input class="field-input" [value]="currentWeekRange()" readonly />
+          </div>
+
+          <!-- Activity description -->
+          <div class="field" [class.has-error]="descCtrl.invalid && descCtrl.touched">
+            <label class="field-label">
+              Activity Description
+              <span class="char-count">
+                {{ descCtrl.value?.length ?? 0 }} / 50 min
+              </span>
+            </label>
+            <textarea
+              class="field-textarea"
+              formControlName="activityDescription"
+              rows="6"
+              placeholder="Describe your weekly activities, tasks completed, challenges faced, and skills gained this week..."
+            ></textarea>
+            <span class="field-error" *ngIf="descCtrl.touched && descCtrl.hasError('required')">
+              Activity description is required
+            </span>
+            <span class="field-error" *ngIf="descCtrl.touched && descCtrl.hasError('minlength')">
+              Please write at least 50 characters
+            </span>
+          </div>
+
+          <!-- File upload -->
+          <div class="field">
+            <label class="field-label">Attach Supporting File <span class="optional">optional</span></label>
+            <app-file-upload
+              label="Upload logbook page or evidence"
+              hint="PDF or image — max 5 MB"
+              (fileSelected)="onFileSelected($event)"
+            />
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+              <span *ngIf="!isSubmitting()">Submit Log</span>
+              <span *ngIf="isSubmitting()" class="spinner"></span>
+            </button>
+            <button type="button" class="btn-outline" (click)="saveDraft()">Save Draft</button>
+          </div>
+
+        </form>
+      </div>
+    </section>
+
+    <!-- ── Right: submission history ─────────────────────────────────── -->
+    <section class="history-col">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Submission History</span>
+        </div>
+
+        <!-- Loading -->
+        <ng-container *ngIf="isLoading(); else historyList">
+          <div class="skeleton-item" *ngFor="let i of [1,2,3,4,5]"></div>
+        </ng-container>
+
+        <ng-template #historyList>
+          <!-- Progress bar summary -->
+          <div class="summary-bar">
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                [style.width.%]="(submittedCount() / totalWeeks()) * 100"
+              ></div>
+            </div>
+            <span class="bar-label">{{ submittedCount() }}/{{ totalWeeks() }}</span>
+          </div>
+
+          <!-- Log rows -->
+          <div
+            class="log-row"
+            *ngFor="let log of logs(); trackBy: trackById"
+          >
+            <div class="log-info">
+              <span class="log-week">Week {{ log.weekNumber }}</span>
+              <span class="log-dates">{{ log.weekStart | date:'MMM d' }} – {{ log.weekEnd | date:'MMM d, y' }}</span>
+            </div>
+            <div class="log-right">
+              <app-status-badge [status]="getStatusVariant(log.status)" [label]="log.status" />
+              <svg *ngIf="log.fileUrl" class="attachment-icon"
+                   width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4a6e5a" stroke-width="2">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-state" *ngIf="logs().length === 0">
+            <p>No logs submitted yet. Start with Week 1 above.</p>
+          </div>
+        </ng-template>
+      </div>
+    </section>
+
+  </div>
+</div>

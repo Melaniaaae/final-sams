@@ -1,0 +1,246 @@
+@import '../../../../../styles/variables';
+
+.dashboard { padding-bottom: 40px; }
+
+// ─── Error banner ─────────────────────────────────────────────────────────
+
+.error-banner {
+  padding: 10px 14px;
+  background: #fde8e7;
+  border: 1px solid #f5c6c4;
+  border-radius: $radius-md;
+  font-size: 13px;
+  color: #c0392b;
+  margin-bottom: 16px;
+}
+
+// ─── KPI row ──────────────────────────────────────────────────────────────
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+
+  @media (max-width: 700px) { grid-template-columns: 1fr; }
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: $text-muted;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: $charcoal;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+.kpi-sub {
+  font-size: 12px;
+  color: $text-muted;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  @include progress-bar;
+}
+
+// ─── Two-column layout ────────────────────────────────────────────────────
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+// ─── Calendar ─────────────────────────────────────────────────────────────
+
+.full-width { width: 100%; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title { @include section-title; }
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-bottom: 10px;
+}
+
+.day-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: $text-muted;
+  text-align: center;
+  padding: 4px 0;
+  letter-spacing: 0.04em;
+}
+
+.day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: default;
+  transition: opacity 0.1s;
+
+  &.submitted {
+    background: $jungle;
+    color: $mint;
+  }
+
+  &.today {
+    background: $mint-darker;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 0 0 2px rgba($mint-darker, 0.3);
+  }
+
+  &.past {
+    background: $mint;
+    color: $jungle;
+  }
+
+  &.future {
+    background: $mint-white;
+    color: rgba($charcoal, 0.3);
+    border: 1px solid $border;
+  }
+}
+
+// ─── Calendar legend ──────────────────────────────────────────────────────
+
+.calendar-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: $text-muted;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  &.submitted::before { background: $jungle; }
+  &.past::before       { background: $mint; }
+  &.future::before     { background: $mint-white; border: 1px solid $border; }
+}
+
+// ─── Ring section ─────────────────────────────────────────────────────────
+
+.ring-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 16px;
+}
+
+.date-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.date-item {
+  background: $mint-white;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 10px 12px;
+}
+
+.date-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+}
+
+.date-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: $jungle;
+}
+
+// ─── Placement pill ───────────────────────────────────────────────────────
+
+.placement-pill {
+  background: $mint-white;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 14px;
+}
+
+.company-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $jungle;
+  margin-bottom: 3px;
+}
+
+.company-dept {
+  font-size: 12px;
+  color: $text-muted;
+  margin-bottom: 4px;
+}
+
+.company-loc {
+  font-size: 11px;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// ─── Skeleton ─────────────────────────────────────────────────────────────
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.skeleton {
+  height: 120px;
+  border-radius: $radius-lg;
+  background: linear-gradient(90deg, #e8f4ee 25%, #f4fbf6 50%, #e8f4ee 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+
+  &.tall { height: 300px; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}

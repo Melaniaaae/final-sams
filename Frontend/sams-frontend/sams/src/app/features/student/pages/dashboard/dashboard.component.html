@@ -1,0 +1,139 @@
+<div class="dashboard" *ngIf="!isLoading; else loadingTpl">
+
+  <!-- Error State -->
+  <div class="error-banner" *ngIf="error">{{ error }}</div>
+
+  <!-- KPI Row -->
+  <div class="kpi-row">
+
+    <app-card variant="mint">
+      <div class="kpi-label">Logs Submitted</div>
+      <div class="kpi-value">{{ logsSubmitted }}</div>
+      <div class="kpi-sub">of {{ totalWeeks }} required</div>
+      <div class="progress-bar">
+        <div class="fill"
+             [style.width.%]="totalWeeks > 0 ? (logsSubmitted / totalWeeks) * 100 : 0">
+        </div>
+      </div>
+    </app-card>
+
+    <app-card>
+      <div class="kpi-label">Days Remaining</div>
+      <div class="kpi-value">{{ progress ? progress.daysRemaining : 0 }}</div>
+      <div class="kpi-sub">
+        Ends {{ progress ? (progress.placement.endDate | date:'MMM d, y') : '—' }}
+      </div>
+      <div class="progress-bar">
+        <div class="fill warn"
+             [style.width.%]="progress ? (100 - progress.completionPercent) : 0">
+        </div>
+      </div>
+    </app-card>
+
+    <app-card>
+      <div class="kpi-label">Completion</div>
+      <div class="kpi-value">{{ progress ? progress.completionPercent : 0 }}%</div>
+      <div class="kpi-sub">Attachment progress</div>
+      <div class="progress-bar">
+        <div class="fill"
+             [style.width.%]="progress ? progress.completionPercent : 0">
+        </div>
+      </div>
+    </app-card>
+
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-grid">
+
+    <!-- Left Column -->
+    <div class="left-col">
+
+      <!-- Logbook Calendar -->
+      <app-card class="full-width">
+        <div class="card-header">
+          <span class="section-title">Logbook Calendar</span>
+          <app-status-badge status="active" label="April 2025" />
+        </div>
+
+        <div class="week-grid">
+          <span *ngFor="let d of ['M','T','W','T','F','S','S']" class="day-label">
+            {{ d }}
+          </span>
+
+          <div *ngFor="let cell of calendarCells"
+               class="day-cell"
+               [class.submitted]="cell.submitted"
+               [class.today]="cell.isToday"
+               [class.past]="cell.isPast && !cell.submitted"
+               [class.future]="cell.isFuture">
+            {{ cell.day }}
+          </div>
+        </div>
+
+        <div class="calendar-legend">
+          <span class="legend-item submitted">Submitted</span>
+          <span class="legend-item past">Past</span>
+          <span class="legend-item future">Upcoming</span>
+        </div>
+      </app-card>
+
+      <!-- Notifications -->
+      <app-notification-dropdown [notifications]="notifications">
+      </app-notification-dropdown>
+
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-col">
+
+      <!-- Progress Ring -->
+      <app-card>
+        <div class="section-title">Attachment Period</div>
+
+        <div class="ring-wrap">
+          <app-progress-ring
+            [percent]="progress ? progress.completionPercent : 0"
+            [radius]="46"
+            [stroke]="8">
+          </app-progress-ring>
+        </div>
+
+        <div class="date-range" *ngIf="progress">
+          <div class="date-item">
+            <div class="date-label">Start</div>
+            <div class="date-val">
+              {{ progress.placement.startDate | date:'MMM d, y' }}
+            </div>
+          </div>
+          <div class="date-item">
+            <div class="date-label">End</div>
+            <div class="date-val">
+              {{ progress.placement.endDate | date:'MMM d, y' }}
+            </div>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- Placement -->
+      <app-card *ngIf="progress">
+        <div class="section-title">Placement</div>
+        <div class="placement-pill">
+          <div class="company-name">{{ progress.placement.companyName }}</div>
+          <div class="company-dept">{{ progress.placement.department }}</div>
+          <div class="company-loc">{{ progress.placement.location }}</div>
+        </div>
+      </app-card>
+
+    </div>
+  </div>
+</div>
+
+<!-- Loading skeleton -->
+<ng-template #loadingTpl>
+  <div class="skeleton-grid">
+    <div class="skeleton" *ngFor="let i of [1,2,3]"></div>
+    <div class="skeleton tall"></div>
+    <div class="skeleton"></div>
+  </div>
+</ng-template>

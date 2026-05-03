@@ -1,0 +1,88 @@
+// ─── Brand Palette ──────────────────────────────────────────────────────────
+$jungle:      #0A231C;
+$jungle-light: #122e24;
+$jungle-mid:  #1a3d2f;
+$mint:        #C5E8D1;
+$mint-dark:   #9dd4b4;
+$mint-darker: #6bb890;
+$mint-white:  #F1F9F4;
+$charcoal:    #1A1A1A;
+$text-muted:  #4a6e5a;
+$border:      #d4ecde;
+$white:       #ffffff;
+
+// ─── Semantic ───────────────────────────────────────────────────────────────
+$danger: #e05a4e;
+$warn:   #f0a500;
+$info:   #2980b9;
+
+// ─── Typography ─────────────────────────────────────────────────────────────
+$font-body:    'DM Sans', sans-serif;
+$font-display: 'Playfair Display', serif;
+
+// ─── Spacing ────────────────────────────────────────────────────────────────
+$space-xs:  4px;
+$space-sm:  8px;
+$space-md:  16px;
+$space-lg:  24px;
+$space-xl:  32px;
+
+// ─── Radius ─────────────────────────────────────────────────────────────────
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+
+// ─── Shadows ────────────────────────────────────────────────────────────────
+$shadow-sm: 0 1px 3px rgba(10,35,28,.06);
+$shadow-md: 0 4px 12px rgba(10,35,28,.08);
+
+// ─── Mixins ─────────────────────────────────────────────────────────────────
+
+@mixin card($padding: $space-lg) {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: $padding;
+}
+
+@mixin card-mint {
+  background: $mint;
+  border-color: $mint-dark;
+}
+
+@mixin progress-bar($height: 8px) {
+  height: $height;
+  background: $mint-white;
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 6px 0;
+
+  .fill {
+    height: 100%;
+    border-radius: 99px;
+    background: $mint-darker;
+    transition: width 0.3s ease;
+
+    &.warn   { background: $warn; }
+    &.danger { background: $danger; }
+  }
+}
+
+@mixin section-title {
+  font-family: $font-display;
+  font-size: 16px;
+  font-weight: 600;
+  color: $jungle;
+}
+
+@mixin badge($bg, $color) {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 500;
+  background: $bg;
+  color: $color;
+}

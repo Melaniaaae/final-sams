@@ -1,0 +1,162 @@
+<div class="coord-dashboard" *ngIf="!isLoading(); else loadingTpl">
+
+  <!-- Error -->
+  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid" *ngIf="kpis() as k">
+    <div class="kpi-card mint">
+      <div class="kpi-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A231C" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div class="kpi-val">{{ k.totalStudents }}</div>
+      <div class="kpi-label">Total Students</div>
+      <div class="kpi-sub">2025 cohort</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-val">{{ k.placedPercent }}%</div>
+      <div class="kpi-label">Placed</div>
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" [style.width.%]="k.placedPercent"></div></div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-val">{{ k.visitedPercent }}%</div>
+      <div class="kpi-label">Field Visited</div>
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill warn" [style.width.%]="k.visitedPercent"></div></div>
+      </div>
+    </div>
+
+    <div class="kpi-card danger-card">
+      <div class="kpi-val">{{ k.missingLogsCount }}</div>
+      <div class="kpi-label">Missing Logs</div>
+      <div class="kpi-sub">Require attention</div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="main-grid">
+
+    <!-- Left: top companies + progress bars -->
+    <div class="left-col">
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Overview</span>
+        </div>
+
+        <div class="overview-row" *ngIf="kpis() as k">
+          <div class="overview-item" *ngFor="let item of [
+            { label: 'Placed', pct: k.placedPercent },
+            { label: 'Field Visited', pct: k.visitedPercent },
+            { label: 'Logs On Track', pct: k.onTrackPercent }
+          ]">
+            <div class="ov-head">
+              <span>{{ item.label }}</span>
+              <span class="ov-pct">{{ item.pct }}%</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" [style.width.%]="item.pct"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" *ngIf="kpis()?.geographicDistribution?.length">
+        <div class="card-head">
+          <span class="card-title">Geographic Distribution</span>
+        </div>
+        <div class="geo-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+          <div *ngFor="let geo of kpis()?.geographicDistribution" style="display: flex; justify-content: space-between; padding: 8px; background: #f9fafa; border-radius: 6px;">
+            <span style="font-weight: 500; color: #0A231C;">{{ geo.county }}</span>
+            <span style="color: #6C7A77;">{{ geo.count }} students</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Urgent Flags</span>
+          <a routerLink="/coordinator/students" class="view-all">View all</a>
+        </div>
+
+        <div *ngIf="urgentFlags().length > 0; else noFlags">
+          <div class="flag-row" *ngFor="let f of urgentFlags()">
+            <div class="flag-avatar">{{ f.student.name | slice:0:1 }}</div>
+            <div class="flag-info">
+              <span class="flag-name">{{ f.student.name }}</span>
+              <span class="flag-reg">{{ f.student.registrationNumber }}</span>
+            </div>
+            <span class="flag-pill">{{ f.issue }}</span>
+          </div>
+        </div>
+
+        <ng-template #noFlags>
+          <div class="empty-state">All students are on track.</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Right: quick links -->
+    <div class="right-col">
+      <div class="card">
+        <div class="card-title" style="margin-bottom: 16px;">Quick Actions</div>
+        <div class="action-grid">
+          <a routerLink="/coordinator/students" class="action-tile">
+            <div class="action-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A231C" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <span>Manage Students</span>
+          </a>
+          <a routerLink="/coordinator/lecturers" class="action-tile">
+            <div class="action-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A231C" stroke-width="2">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+            </div>
+            <span>Manage Lecturers</span>
+          </a>
+          <a routerLink="/coordinator/companies" class="action-tile">
+            <div class="action-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A231C" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14"/>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </div>
+            <span>Company Database</span>
+          </a>
+          <div class="action-tile">
+            <div class="action-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A231C" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <span>Analytics</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="skeleton-grid">
+    <div class="skeleton" *ngFor="let i of [1,2,3,4]"></div>
+    <div class="skeleton tall"></div>
+    <div class="skeleton tall"></div>
+  </div>
+</ng-template>

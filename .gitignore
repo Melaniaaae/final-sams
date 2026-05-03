@@ -1,0 +1,13 @@
+# Frontend exclusions
+**/node_modules/
+**/.angular/
+**/dist/
+
+# Backend exclusions
+**/__pycache__/
+**/.venv/
+**/.env
+
+# OS files
+.DS_Store
+Thumbs.db

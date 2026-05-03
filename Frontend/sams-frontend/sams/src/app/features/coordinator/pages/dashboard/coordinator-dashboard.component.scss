@@ -1,0 +1,287 @@
+@import '../../../../../styles/variables';
+
+.coord-dashboard { padding-bottom: 40px; }
+
+.error-banner {
+  padding: 10px 14px;
+  background: #fde8e7;
+  border: 1px solid #f5c6c4;
+  border-radius: $radius-md;
+  font-size: 13px;
+  color: #c0392b;
+  margin-bottom: 16px;
+}
+
+// ─── KPI grid ─────────────────────────────────────────────────────────────
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 500px) { grid-template-columns: 1fr; }
+}
+
+.kpi-card {
+  @include card(18px);
+  position: relative;
+
+  &.mint {
+    background: $mint;
+    border-color: $mint-dark;
+
+    .kpi-val   { color: $jungle; }
+    .kpi-label { color: rgba($jungle, 0.6); }
+    .kpi-sub   { color: rgba($jungle, 0.5); }
+  }
+
+  &.danger-card {
+    border-left: 3px solid $danger;
+    .kpi-val { color: $danger; }
+  }
+}
+
+.kpi-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-md;
+  background: rgba($jungle, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.kpi-val {
+  font-size: 28px;
+  font-weight: 600;
+  color: $charcoal;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.kpi-sub {
+  font-size: 12px;
+  color: $text-muted;
+}
+
+.prog-wrap { margin-top: 10px; }
+
+.prog-track {
+  height: 6px;
+  background: $mint-white;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.prog-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: $mint-darker;
+  transition: width 0.4s ease;
+
+  &.warn { background: $warn; }
+}
+
+// ─── Main grid ────────────────────────────────────────────────────────────
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.card {
+  @include card;
+  margin-bottom: 20px;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.card-title {
+  @include section-title;
+}
+
+.view-all {
+  font-size: 12px;
+  color: $mint-darker;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ─── Overview bars ────────────────────────────────────────────────────────
+
+.overview-item {
+  margin-bottom: 14px;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.ov-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: $text-muted;
+  margin-bottom: 6px;
+}
+
+.ov-pct {
+  font-weight: 600;
+  color: $charcoal;
+}
+
+// ─── Urgent flags ─────────────────────────────────────────────────────────
+
+.flag-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #fef9f0;
+  border: 1px solid #fde8c0;
+  border-radius: $radius-md;
+  margin-bottom: 6px;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.flag-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $mint;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: $jungle;
+  flex-shrink: 0;
+}
+
+.flag-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.flag-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: $charcoal;
+}
+
+.flag-reg {
+  font-size: 11px;
+  color: $text-muted;
+}
+
+.flag-pill {
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: #fff3cd;
+  color: #b27d00;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// ─── Quick action tiles ───────────────────────────────────────────────────
+
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.action-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  background: $mint-white;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+
+  span {
+    font-size: 12px;
+    font-weight: 500;
+    color: $jungle;
+    text-align: center;
+  }
+
+  &:hover {
+    border-color: $mint-darker;
+    background: $mint;
+  }
+}
+
+.action-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-md;
+  background: $white;
+  border: 1px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ─── Skeleton ─────────────────────────────────────────────────────────────
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.skeleton {
+  height: 100px;
+  border-radius: $radius-lg;
+  background: linear-gradient(90deg, #e8f4ee 25%, #f4fbf6 50%, #e8f4ee 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+
+  &.tall { height: 280px; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.empty-state {
+  padding: 24px 0;
+  text-align: center;
+  font-size: 13px;
+  color: $text-muted;
+}

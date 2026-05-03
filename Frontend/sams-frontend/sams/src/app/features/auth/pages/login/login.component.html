@@ -1,0 +1,96 @@
+<div class="login-page">
+
+  <!-- Left panel: branding -->
+  <aside class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-logo">SAMS</div>
+      <h1 class="brand-title">Student Attachment<br>Management System</h1>
+      <p class="brand-sub">Track your industrial attachment, submit weekly logs, and stay connected with your supervisors — all in one place.</p>
+      <div class="brand-stats">
+        <div class="stat"><span class="stat-value">1,200+</span><span class="stat-label">Students</span></div>
+        <div class="stat"><span class="stat-value">340+</span><span class="stat-label">Companies</span></div>
+        <div class="stat"><span class="stat-value">48</span><span class="stat-label">Lecturers</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right panel: form -->
+  <main class="form-panel">
+    <div class="form-wrap">
+
+      <div class="form-header">
+        <h2 class="form-title">Welcome back</h2>
+        <p class="form-sub">Sign in to your account to continue</p>
+      </div>
+
+      <!-- Error -->
+      <div class="error-alert" *ngIf="errorMsg()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ errorMsg() }}
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+        <!-- Email -->
+        <div class="field" [class.error]="emailCtrl.invalid && emailCtrl.touched">
+          <label class="field-label" for="email">Email address</label>
+          <input
+            id="email"
+            type="email"
+            class="field-input"
+            formControlName="email"
+            placeholder="you@university.ac.ke"
+            autocomplete="email"
+          />
+          <span class="field-error" *ngIf="emailCtrl.touched && emailCtrl.hasError('required')">Email is required</span>
+          <span class="field-error" *ngIf="emailCtrl.touched && emailCtrl.hasError('email')">Enter a valid email</span>
+        </div>
+
+        <!-- Password -->
+        <div class="field" [class.error]="passwordCtrl.invalid && passwordCtrl.touched">
+          <label class="field-label" for="password">Password</label>
+          <div class="input-wrap">
+            <input
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              class="field-input"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+            <button type="button" class="eye-btn" (click)="togglePassword()" tabindex="-1">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4a6e5a" stroke-width="2">
+                <path *ngIf="!showPassword()" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <path *ngIf="showPassword()" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line *ngIf="showPassword()" x1="1" y1="1" x2="23" y2="23"/>
+                <circle *ngIf="!showPassword()" cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <span class="field-error" *ngIf="passwordCtrl.touched && passwordCtrl.hasError('required')">Password is required</span>
+          <span class="field-error" *ngIf="passwordCtrl.touched && passwordCtrl.hasError('minlength')">Minimum 6 characters</span>
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="isLoading()"
+        >
+          <span *ngIf="!isLoading()">Sign in</span>
+          <span *ngIf="isLoading()" class="spinner"></span>
+        </button>
+
+      </form>
+<p class="help-text">Having trouble? Contact your department coordinator.</p>
+
+<p class="signup-link">
+  New student?
+  <a routerLink="/auth/signup">Create an account</a>
+</p>
+     </div>
+  </main>
+
+</div>

@@ -1,0 +1,283 @@
+@import '../../../../../styles/variables';
+
+.lecturers-page { padding-bottom: 40px; }
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-family: $font-display;
+  font-size: 22px;
+  font-weight: 600;
+  color: $jungle;
+  margin-bottom: 4px;
+}
+
+.page-sub { font-size: 13px; color: $text-muted; }
+
+// ─── Add form panel ───────────────────────────────────────────────────────
+
+.form-panel {
+  @include card;
+  margin-bottom: 20px;
+  border-left: 3px solid $mint-darker;
+}
+
+.form-title {
+  font-family: $font-display;
+  font-size: 16px;
+  font-weight: 600;
+  color: $jungle;
+  margin-bottom: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+
+.field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-muted;
+}
+
+.field-input {
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: $font-body;
+  color: $charcoal;
+  background: $white;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: $mint-darker; }
+}
+
+.field-error {
+  font-size: 11px;
+  color: $danger;
+}
+
+.form-actions { display: flex; gap: 10px; }
+
+.error-alert {
+  padding: 10px 14px;
+  background: #fde8e7;
+  border: 1px solid #f5c6c4;
+  border-radius: $radius-md;
+  font-size: 13px;
+  color: #c0392b;
+  margin-bottom: 16px;
+}
+
+// ─── Lecturer cards ───────────────────────────────────────────────────────
+
+.lecturer-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  margin-bottom: 10px;
+  transition: box-shadow 0.15s;
+
+  &:hover { box-shadow: $shadow-sm; }
+
+  @media (max-width: 700px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.lect-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1.4;
+  min-width: 0;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: $mint;
+  color: $jungle;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lect-info { min-width: 0; }
+
+.lect-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $charcoal;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lect-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: $text-muted;
+}
+
+// ─── Capacity ─────────────────────────────────────────────────────────────
+
+.lect-capacity {
+  flex: 1;
+  min-width: 140px;
+}
+
+.cap-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: $text-muted;
+  margin-bottom: 5px;
+}
+
+.cap-count { font-weight: 600; color: $charcoal; }
+
+.prog-track {
+  height: 6px;
+  background: $mint-white;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.prog-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: $mint-darker;
+  transition: width 0.4s ease;
+
+  &.full { background: $danger; }
+}
+
+.capacity-pill {
+  font-size: 10px;
+  font-weight: 600;
+  color: #c0392b;
+  background: #fde8e7;
+  border-radius: 99px;
+  padding: 2px 8px;
+}
+
+// ─── Actions ──────────────────────────────────────────────────────────────
+
+.lect-actions { flex-shrink: 0; }
+
+.btn-primary {
+  background: $jungle;
+  color: $mint;
+  border: none;
+  border-radius: $radius-md;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: $font-body;
+  cursor: pointer;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s;
+  &:hover:not(:disabled) { opacity: 0.9; }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.btn-outline {
+  background: transparent;
+  color: $jungle;
+  border: 1.5px solid $jungle;
+  border-radius: $radius-md;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: $font-body;
+  cursor: pointer;
+  height: 38px;
+  transition: background 0.15s;
+  &:hover { background: rgba($jungle, 0.04); }
+}
+
+.btn-outline-sm {
+  background: transparent;
+  color: $jungle;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-family: $font-body;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+  &:hover { background: $mint-white; }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba($mint, 0.3);
+  border-top-color: $mint;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+// ─── Empty / skeleton ─────────────────────────────────────────────────────
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  font-size: 13px;
+  color: $text-muted;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+}
+
+.skeleton-card {
+  height: 84px;
+  border-radius: $radius-lg;
+  background: linear-gradient(90deg, #e8f4ee 25%, #f4fbf6 50%, #e8f4ee 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}

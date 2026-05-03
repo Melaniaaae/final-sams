@@ -1,0 +1,174 @@
+<div class="profile-page">
+
+  <div class="page-header">
+    <h2 class="page-title">My Profile</h2>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="skeleton-grid">
+    <div class="skeleton tall"></div>
+    <div class="skeleton"></div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-banner" *ngIf="error && !isLoading">{{ error }}</div>
+
+  <!-- Content — shown when not loading -->
+  <div class="layout-grid" *ngIf="!isLoading && !error">
+
+    <!-- Left column -->
+    <div class="left-col">
+
+      <!-- Personal details -->
+      <div class="card identity-card">
+        <div class="identity-hero">
+          <div class="avatar large">
+            {{ currentUser ? initials(currentUser.name) : '?' }}
+          </div>
+          <div>
+            <div class="identity-name">{{ currentUser?.name ?? '—' }}</div>
+            <div class="identity-reg">
+              {{ currentUser?.registrationNumber ?? '—' }}
+            </div>
+            <div class="identity-program">
+              {{ student?.department ?? '—' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">Email</div>
+            <div class="detail-val">{{ currentUser?.email ?? '—' }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Phone</div>
+            <div class="detail-val">{{ student?.phone_number ?? '—' }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Department</div>
+            <div class="detail-val">{{ student?.department ?? '—' }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Reg. Number</div>
+            <div class="detail-val">{{ currentUser?.registrationNumber ?? '—' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placement details -->
+      <div class="card" *ngIf="progress">
+        <div class="card-title" style="margin-bottom: 16px;">
+          Placement Details
+        </div>
+
+        <div class="placement-pill">
+          <div class="placement-name">{{ progress.placement.companyName }}</div>
+          <div class="placement-dept">{{ progress.placement.department }}</div>
+          <div class="placement-loc">{{ progress.placement.location }}</div>
+        </div>
+
+        <div class="meta-list">
+          <div class="meta-row">
+            <span class="meta-key">Start Date</span>
+            <span class="meta-val">
+              {{ progress.placement.startDate | date:'MMMM d, y' }}
+            </span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">End Date</span>
+            <span class="meta-val">
+              {{ progress.placement.endDate | date:'MMMM d, y' }}
+            </span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Duration</span>
+            <span class="meta-val">{{ progress.daysTotal }} days</span>
+          </div>
+  
+        </div>
+      </div>
+
+      <!-- No placement message -->
+      <div class="card" *ngIf="!progress">
+        <div class="empty-state">
+          <p>No placement assigned yet.</p>
+          <p class="empty-sub">Contact your coordinator to get placed.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div class="right-col">
+
+      <!-- Progress ring -->
+      <div class="card progress-card" *ngIf="progress">
+        <div class="card-title" style="margin-bottom: 16px;">
+          Attachment Progress
+        </div>
+
+        <div class="ring-section">
+          <app-progress-ring
+            [percent]="progress.completionPercent"
+            [radius]="54"
+            [stroke]="9">
+          </app-progress-ring>
+        </div>
+
+        <div class="progress-stats">
+          <div class="pstat">
+            <div class="pstat-val">{{ progress.daysElapsed }}</div>
+            <div class="pstat-label">Days elapsed</div>
+          </div>
+          <div class="pstat-divider"></div>
+          <div class="pstat">
+            <div class="pstat-val">{{ progress.daysRemaining }}</div>
+            <div class="pstat-label">Days left</div>
+          </div>
+          <div class="pstat-divider"></div>
+          <div class="pstat">
+            <div class="pstat-val">{{ progress.daysTotal }}</div>
+            <div class="pstat-label">Total days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supervisors -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom: 14px;">
+          My Supervisors
+        </div>
+
+        <div class="supervisor-block">
+          <div class="sup-type-label">Station Supervisor</div>
+          <div class="supervisor-row">
+            <div class="sup-avatar">
+              {{ initials(stationSupervisor.name) }}
+            </div>
+            <div class="sup-info">
+              <div class="sup-name">{{ stationSupervisor.name }}</div>
+              <div class="sup-phone">{{ stationSupervisor.phone }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sup-divider"></div>
+
+        <div class="supervisor-block">
+          <div class="sup-type-label">University Supervisor</div>
+          <div class="supervisor-row">
+            <div class="sup-avatar">
+              {{ initials(universitySupervisor.name) }}
+            </div>
+            <div class="sup-info">
+              <div class="sup-name">{{ universitySupervisor.name }}</div>
+              <div class="sup-phone">{{ universitySupervisor.phone }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

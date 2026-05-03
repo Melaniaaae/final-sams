@@ -1,0 +1,187 @@
+@import '../../../../../styles/variables';
+
+.students-page { padding-bottom: 40px; }
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-family: $font-display;
+  font-size: 22px;
+  font-weight: 600;
+  color: $jungle;
+  margin-bottom: 4px;
+}
+
+.page-sub { font-size: 13px; color: $text-muted; }
+
+.btn-primary {
+  background: $jungle;
+  color: $mint;
+  border: none;
+  border-radius: $radius-md;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: $font-body;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  &:hover { opacity: 0.9; }
+}
+
+// ─── Filters ──────────────────────────────────────────────────────────────
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 8px 12px;
+  flex: 1;
+  min-width: 220px;
+
+  input {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-family: $font-body;
+    color: $charcoal;
+    outline: none;
+    flex: 1;
+    &::placeholder { color: rgba($charcoal, 0.35); }
+  }
+}
+
+.filter-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.chip {
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: $font-body;
+  border: 1px solid $border;
+  background: $white;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover { border-color: $mint-darker; color: $jungle; }
+  &.active { background: $jungle; color: $mint; border-color: $jungle; }
+}
+
+// ─── Table ────────────────────────────────────────────────────────────────
+
+.card {
+  @include card;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  color: $text-muted;
+  padding: 8px 14px;
+  border-bottom: 1px solid $border;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+td {
+  padding: 12px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid $mint-white;
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: $mint-white; }
+
+.student-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $mint;
+  color: $jungle;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.student-name {
+  font-weight: 500;
+  color: $charcoal;
+  font-size: 13px;
+}
+
+.student-email {
+  font-size: 11px;
+  color: $text-muted;
+}
+
+.muted { color: $text-muted; }
+
+.row-action {
+  background: transparent;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: $font-body;
+  color: $jungle;
+  cursor: pointer;
+  transition: background 0.12s;
+
+  &:hover { background: $mint-white; }
+}
+
+// ─── Empty / loading ──────────────────────────────────────────────────────
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  font-size: 13px;
+  color: $text-muted;
+}
+
+.skeleton-row {
+  height: 52px;
+  border-radius: $radius-md;
+  background: linear-gradient(90deg, #e8f4ee 25%, #f4fbf6 50%, #e8f4ee 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 8px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
