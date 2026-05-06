@@ -91,5 +91,28 @@ export class LecturersComponent implements OnInit {
       });
   }
 
+  selectedLecturer = signal<Supervisor | null>(null);
+  assignedStudents = signal<any[]>([]);
+  isLoadingStudents = signal(false);
+
+  viewAssignedStudents(lecturer: Supervisor): void {
+    this.selectedLecturer.set(lecturer);
+    this.isLoadingStudents.set(true);
+    this.assignedStudents.set([]);
+    this.coordService.getStudents({ supervisorId: lecturer.id, pageSize: 100 }).subscribe({
+      next: (res) => {
+        this.assignedStudents.set(res.items);
+        this.isLoadingStudents.set(false);
+      },
+      error: () => {
+        this.isLoadingStudents.set(false);
+      }
+    });
+  }
+
+  closeModal(): void {
+    this.selectedLecturer.set(null);
+  }
+
   trackById(_: number, l: Supervisor): string { return l.id; }
 }

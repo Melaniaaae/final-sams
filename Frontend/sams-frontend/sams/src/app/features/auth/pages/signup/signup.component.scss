@@ -379,3 +379,31 @@
     &:hover { text-decoration: underline; }
   }
 }
+
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+// ── Year badge on date labels ────────────────────────────────────
+.year-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 99px;
+  background: #C5E8D1;
+  color: #0A231C;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+// ── City dropdown disabled state ─────────────────────────────────
+.field-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}

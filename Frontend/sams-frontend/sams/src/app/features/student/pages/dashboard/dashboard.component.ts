@@ -84,7 +84,7 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
 
         this.totalWeeks = progress ? Math.ceil(progress.daysTotal / 7) : 12;
 
-        this.calendarCells = this._buildCalendar(this.recentLogs);
+        this.calendarCells = this._buildCalendar(this.recentLogs, progress?.placement?.startDate);
       },
       error: (err) => {
         this.error     = 'Failed to load dashboard data. Please refresh.';
@@ -101,13 +101,21 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
 
   trackByLogId(_: number, log: WeeklyLog): string { return log.id; }
 
-  private _buildCalendar(logs: WeeklyLog[]): CalendarCell[] {
+  currentMonthYear: string = 'April 2025'; // Fallback
+
+  private _buildCalendar(logs: WeeklyLog[], placementStart?: string): CalendarCell[] {
     const now       = new Date();
+    // If placement hasn't started yet, or we're past it, we still show a relevant month.
+    // Let's default to the current month unless otherwise needed.
+    // Actually, showing the current real-world month makes the most sense.
     const year      = now.getFullYear();
     const month     = now.getMonth();
     const today     = now.getDate();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDow    = (new Date(year, month, 1).getDay() + 6) % 7;
+    
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    this.currentMonthYear = `${monthNames[month]} ${year}`;
 
     const submittedDays = new Set(
       logs

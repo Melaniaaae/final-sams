@@ -95,6 +95,7 @@
               <input
                 id="name"
                 type="text"
+                appAlphabet
                 class="field-input"
                 formControlName="name"
                 placeholder="e.g. Jane Muthoni Kamau"
@@ -107,6 +108,10 @@
               <span class="field-error"
                     *ngIf="nameCtrl.touched && nameCtrl.hasError('minlength')">
                 Name must be at least 3 characters
+              </span>
+              <span class="field-error"
+                    *ngIf="nameCtrl.touched && nameCtrl.hasError('pattern')">
+                Name can only contain letters and spaces
               </span>
             </div>
 
@@ -121,7 +126,24 @@
                 placeholder="e.g. S13/07748/22"
                 autocomplete="off"
               />
-            
+              @if(regCtrl.hasError('pattern') && (regCtrl.touched || regCtrl.dirty)) {
+                <span class="field-error">
+                  Registration Number must match the format: Axx/xxxxx/xx
+                </span>
+              }
+              @else if(regCtrl.hasError('required') && (regCtrl.touched || regCtrl.dirty)) {
+                <span class="field-error">
+                  Registration Number is required
+                </span>
+              }
+              <!-- <span class="field-error"
+                    *ngIf="regCtrl.touched && regCtrl.hasError('required')">
+                Registration Number is required
+              </span>
+              <span class="field-error"
+                    *ngIf="regCtrl.touched && regCtrl.hasError('pattern')">
+                Registration Number must be alphanumeric (can include / or -)
+              </span> -->
             </div>
 
             <!-- Email -->
@@ -150,21 +172,27 @@
               <label class="field-label" for="phone">Phone Number</label>
               <input
                 id="phone"
-                type="tel"
+                type="text"
                 class="field-input"
+                appNumeric
                 formControlName="phone"
                 placeholder="e.g. 0712 345 678"
                 autocomplete="tel"
+                minlength="10"
+                maxlength="13"
               />
-              <span class="field-hint">Kenyan number starting with 07 or +254</span>
-              <span class="field-error"
-                    *ngIf="phoneCtrl.touched && phoneCtrl.hasError('required')">
-                Phone number is required
-              </span>
-              <span class="field-error"
-                    *ngIf="phoneCtrl.touched && phoneCtrl.hasError('pattern')">
-                Enter a valid Kenyan phone number
-              </span>
+              <!-- <span class="field-hint">Kenyan number starting with 07 or +254</span> -->
+              @if(phoneCtrl.hasError('required') && phoneCtrl.touched){
+                <span class="field-error">Phone number is required</span>
+              }
+              @else if(phoneCtrl.hasError('pattern')  && (phoneCtrl.dirty || phoneCtrl.touched)) {
+                <span class="field-error">
+                  Enter a valid Kenyan phone number
+                </span>
+              }
+              @else{
+                <span class="field-hint">Kenyan number starting with 07 or +254</span>
+              }
             </div>
 
             <button type="button" class="submit-btn" (click)="nextStep()">
@@ -187,6 +215,7 @@
               <input
                 id="company"
                 type="text"
+                appAlphabet
                 class="field-input"
                 formControlName="company"
                 placeholder="e.g. Safaricom PLC"
@@ -195,40 +224,48 @@
                     *ngIf="companyCtrl.touched && companyCtrl.hasError('required')">
                 Company name is required
               </span>
+              <span class="field-error"
+                    *ngIf="companyCtrl.touched && companyCtrl.hasError('minlength')">
+                Company name must be at least 2 characters
+              </span>
+              <span class="field-error"
+                    *ngIf="companyCtrl.touched && companyCtrl.hasError('pattern')">
+                Company name can only contain letters and spaces
+              </span>
             </div>
 
-            <!-- Location: County + City -->
+            <!-- County + City row -->
             <div class="field-row">
+
+              <!-- County dropdown -->
               <div class="field" [class.error]="countyCtrl.invalid && countyCtrl.touched">
                 <label class="field-label" for="county">County</label>
-                <select
-                  id="county"
-                  class="field-input field-select"
-                  formControlName="county"
-                >
+                <select id="county" class="field-input field-select"
+                        formControlName="county"
+                        (change)="onCountyChange(countyCtrl.value ?? '')">
                   <option value="" disabled selected>Select county</option>
                   <option *ngFor="let c of counties" [value]="c">{{ c }}</option>
                 </select>
-                <span class="field-error"
-                      *ngIf="countyCtrl.touched && countyCtrl.hasError('required')">
-                  County is required
-                </span>
+                <span class="field-error" *ngIf="countyCtrl.touched && countyCtrl.hasError('required')">County is required</span>
               </div>
 
+              <!-- City dropdown — updates when county changes -->
               <div class="field" [class.error]="cityCtrl.invalid && cityCtrl.touched">
                 <label class="field-label" for="city">City / Town</label>
-                <input
-                  id="city"
-                  type="text"
-                  class="field-input"
-                  formControlName="city"
-                  placeholder="e.g. Westlands"
-                />
-                <span class="field-error"
-                      *ngIf="cityCtrl.touched && cityCtrl.hasError('required')">
-                  City is required
+                <select id="city" class="field-input field-select"
+                        formControlName="city"
+                        [disabled]="availableCities.length === 0">
+                  <option value="" disabled selected>
+                    {{ availableCities.length === 0 ? 'Select county first' : 'Select city / town' }}
+                  </option>
+                  <option *ngFor="let c of availableCities" [value]="c">{{ c }}</option>
+                </select>
+                <span class="field-hint" *ngIf="availableCities.length === 0">
+                  Please select a county first
                 </span>
+                <span class="field-error" *ngIf="cityCtrl.touched && cityCtrl.hasError('required')">City is required</span>
               </div>
+
             </div>
 
             <!-- Station supervisor -->
@@ -237,6 +274,7 @@
               <input
                 id="supervisor"
                 type="text"
+                appAlphabet
                 class="field-input"
                 formControlName="stationSupervisor"
                 placeholder="e.g. Mr. Brian Ochieng"
@@ -245,6 +283,14 @@
               <span class="field-error"
                     *ngIf="supervisorCtrl.touched && supervisorCtrl.hasError('required')">
                 Supervisor name is required
+              </span>
+              <span class="field-error"
+                    *ngIf="supervisorCtrl.touched && supervisorCtrl.hasError('minlength')">
+                Supervisor name must be at least 2 characters
+              </span>
+              <span class="field-error"
+                    *ngIf="supervisorCtrl.touched && supervisorCtrl.hasError('pattern')">
+                Supervisor name can only contain letters and spaces
               </span>
             </div>
 
@@ -255,48 +301,57 @@
                 id="supervisorPhone"
                 type="text"
                 class="field-input"
+                appNumeric
                 formControlName="stationSupervisorPhone"
-                placeholder="E.g., +254700000000"
+                placeholder="e.g. 0712 345 678"
+                autocomplete="tel"
+                minlength="10"
+                maxlength="13"
               />
-              <span class="field-error" *ngIf="supervisorPhoneCtrl.touched && supervisorPhoneCtrl.hasError('required')">
-                Supervisor phone is required.
-              </span>
+              @if(supervisorPhoneCtrl.hasError('required') && supervisorPhoneCtrl.touched){
+                <span class="field-error">Supervisor phone is required</span>
+              }
+              @else if(supervisorPhoneCtrl.hasError('pattern')  && (supervisorPhoneCtrl.dirty || supervisorPhoneCtrl.touched)) {
+                <span class="field-error">
+                  Enter a valid Kenyan phone number
+                </span>
+              }
+              @else{
+                <span class="field-hint">Kenyan number starting with 07 or +254</span>
+              }
             </div>
 
-            <!-- Dates -->
+            <!-- Dates — both restricted to current year only -->
             <div class="field-row">
+
               <div class="field" [class.error]="startCtrl.invalid && startCtrl.touched">
-                <label class="field-label" for="startDate">Start Date</label>
-                <input
-                  id="startDate"
-                  type="date"
-                  class="field-input"
-                  formControlName="startDate"
-                  (change)="onStartDateChange()"
-                />
-                <span class="field-error"
-                      *ngIf="startCtrl.touched && startCtrl.hasError('required')">
-                  Start date is required
-                </span>
+                <label class="field-label" for="startDate">
+                  Start Date
+                  <span class="year-badge">{{ currentYear }} only</span>
+                </label>
+                <input id="startDate" type="date" class="field-input"
+                       formControlName="startDate"
+                       [min]="minDate"
+                       [max]="maxDate"
+                       (change)="onStartDateChange()" />
+                <span class="field-hint">Must be in {{ currentYear }}</span>
+                <span class="field-error" *ngIf="startCtrl.touched && startCtrl.hasError('required')">Start date is required</span>
               </div>
 
               <div class="field" [class.error]="endCtrl.invalid && endCtrl.touched">
-                <label class="field-label" for="endDate">End Date</label>
-                <input
-                  id="endDate"
-                  type="date"
-                  class="field-input"
-                  formControlName="endDate"
-                />
-                <span class="field-error"
-                      *ngIf="endCtrl.touched && endCtrl.hasError('required')">
-                  End date is required
-                </span>
-                <span class="field-error"
-                      *ngIf="endCtrl.touched && endCtrl.hasError('endBeforeStart')">
-                  End date must be after start date
-                </span>
+                <label class="field-label" for="endDate">
+                  End Date
+                  <span class="year-badge">{{ currentYear }} only</span>
+                </label>
+                <input id="endDate" type="date" class="field-input"
+                       formControlName="endDate"
+                       [min]="minDate"
+                       [max]="maxDate" />
+                <span class="field-hint">Must be in {{ currentYear }}</span>
+                <span class="field-error" *ngIf="endCtrl.touched && endCtrl.hasError('required')">End date is required</span>
+                <span class="field-error" *ngIf="endCtrl.touched && endCtrl.hasError('endBeforeStart')">End date must be after start date</span>
               </div>
+
             </div>
 <!-- Password -->
 <div class="field" [class.error]="passwordCtrl.invalid && passwordCtrl.touched">

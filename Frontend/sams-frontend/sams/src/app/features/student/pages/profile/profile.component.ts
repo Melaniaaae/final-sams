@@ -67,11 +67,19 @@ export class ProfileComponent implements OnInit {
         this.student  = student as Student | null;
         this.progress = progress as PlacementProgress | null;
         
-        if (this.progress && this.progress.placement) {
+        if (this.progress && this.progress.placement && (this.progress.placement as any).stationSupervisorName && (this.progress.placement as any).stationSupervisorName !== 'N/A' && (this.progress.placement as any).stationSupervisorName !== 'Unassigned') {
             this.stationSupervisor = {
                 id: 'sup-1', 
-                name: (this.progress.placement as any).stationSupervisorName || 'Not assigned',
+                name: (this.progress.placement as any).stationSupervisorName,
                 phone: (this.progress.placement as any).stationSupervisorPhone || '—', 
+                email: '—', 
+                type: 'station',
+            };
+        } else if (this.student && (this.student as any).stationSupervisorName) {
+            this.stationSupervisor = {
+                id: 'sup-1', 
+                name: (this.student as any).stationSupervisorName,
+                phone: (this.student as any).stationSupervisorPhone || '—', 
                 email: '—', 
                 type: 'station',
             };

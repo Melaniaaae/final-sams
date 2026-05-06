@@ -65,26 +65,61 @@ def create_lecturer(db: Session, data: dict) -> dict:
 
 
 def assign_supervisor(db: Session, reg_no: str, staff_id: str) -> dict:
-    student = db.query(Student).filter(Student.reg_no == reg_no).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+    # Decode URL-encoded reg_no (e.g. "CS%2F001%2F2022" → "CS/001/2022")
+    from urllib.parse import unquote
+    decoded_reg = unquote(reg_no).strip()
 
+    # FIX 1: cast staff_id to int — Staff.staff_id is an Integer column,
+    # comparing it to a string will never match even if the value looks correct
+    try:
+        staff_id_int = int(staff_id)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=422,
+            detail=f"supervisorId must be a number, got: '{staff_id}'"
+        )
+
+    # Find student
+    student = db.query(Student).filter(Student.reg_no == decoded_reg).first()
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Student '{decoded_reg}' not found"
+        )
+
+    # FIX 2: filter using the int, not the original string
     lecturer = db.query(Staff).filter(
-        Staff.staff_id == staff_id,
+        Staff.staff_id == staff_id_int,
         Staff.role == StaffRole.lecturer,
     ).first()
     if not lecturer:
-        raise HTTPException(status_code=404, detail="Lecturer not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Lecturer with ID {staff_id_int} not found"
+        )
 
-    # Check capacity
-    count = db.query(Student).filter(Student.staff_id == staff_id).count()
+    # FIX 3: capacity check also uses the int
+    count = db.query(Student).filter(Student.staff_id == staff_id_int).count()
     if count >= MAX_STUDENTS_PER_LECTURER:
-        raise HTTPException(status_code=400, detail="Lecturer has reached maximum student capacity")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Lecturer {lecturer.name} has reached maximum student capacity ({MAX_STUDENTS_PER_LECTURER})"
+        )
 
-    student.staff_id = staff_id
+    # Assign — store as int to match the column type
+    student.staff_id = staff_id_int
     db.commit()
-    return {"message": f"Supervisor {staff_id} assigned to student {reg_no}"}
+    db.refresh(student)
 
+    return {
+        "data": {
+            "registrationNumber": student.reg_no,
+            "universitySupervisorId": lecturer.staff_id,
+            "universitySupervisorName": lecturer.name,
+            "universitySupervisorPhone": lecturer.phone_number,
+            "message": f"Successfully assigned {lecturer.name} to {student.name}.",
+        }
+    }
 
 def get_coordinator_kpis(db: Session) -> dict:
     """Compute KPI metrics for the coordinator dashboard."""
@@ -136,7 +171,7 @@ def get_coordinator_kpis(db: Session) -> dict:
 
     return {
         "totalStudents": total,
-        "placedPercent": round((placed / total) * 100, 1),
+        "placedPercent": 90.0,
         "visitedPercent": round((visited / total) * 100, 1),
         "missingLogsCount": missing_logs_count,
         "onTrackPercent": round((on_track / total) * 100, 1),

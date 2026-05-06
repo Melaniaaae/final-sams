@@ -41,6 +41,14 @@ export interface Student {
   placementId?: string;
   status?: AttachmentStatus;
   universitySupervisorName?: string;
+  universitySupervisorId?: string;
+  universitySupervisorPhone?: string;
+  company?: string;
+  location?: string;
+  startDate?: string;
+  endDate?: string;
+  stationSupervisorName?: string;
+  stationSupervisorPhone?: string;
 }
 
 // ─── Placement ─────────────────────────────────────────────────────────────

@@ -54,6 +54,12 @@ export class CoordinatorService {
     );
   }
 
+  getStudentDocuments(studentId: string): Observable<{ id: string; name: string; type: string; url: string; uploadedAt: string }[]> {
+    return this.http
+      .get<ApiResponse<any[]>>(`${this.base}/students/${encodeURIComponent(studentId)}/documents`)
+      .pipe(map((r) => r.data));
+  }
+
   // ─── Lecturers / Supervisors ──────────────────────────────────────────
 
   getLecturers(): Observable<Supervisor[]> {

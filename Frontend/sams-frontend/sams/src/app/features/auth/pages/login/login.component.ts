@@ -66,6 +66,10 @@ export class LoginComponent {
   }
 
   private extractErrorMessage(err: any): string {
+    if (err.name === 'TimeoutError' || err.message?.includes('Timeout')) {
+      return 'Server is not responding. Please make sure the backend is running and not paused.';
+    }
+
     if (err.status === 0) {
       return 'Cannot connect to server. Make sure FastAPI is running on port 8000.';
     }

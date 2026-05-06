@@ -20,10 +20,14 @@ class StudentRegisterSchema(BaseModel):
     password: str = "Sams@2025"
 
     @field_validator("registrationNumber")
-    def validate_reg_no(cls, value):
-          if len(value) < 3:
-              raise ValueError("Registration number too short")
-          return value
+    @classmethod
+    def validate_reg_no(cls, v: str) -> str:
+        v = v.strip()
+        if len(v) < 3:
+            raise ValueError("Registration number too short")
+        if not re.match(r"^[A-Za-z0-9/\-]+$", v):
+            raise ValueError("Registration number must be alphanumeric (can include / or -)")
+        return v
 
     @field_validator("phone")
     @classmethod
@@ -55,6 +59,15 @@ class StudentRegisterSchema(BaseModel):
         v = v.strip()
         if len(v) < 2:
             raise ValueError("Name must be at least 2 characters")
+        if not re.match(r"^[A-Za-z\s]+$", v):
+            raise ValueError("Name can only contain letters and spaces")
+        return v
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        if len(v) < 6:
+            raise ValueError("Password must be at least 6 characters")
         return v
 
     @field_validator("company")
@@ -74,6 +87,23 @@ class StaffRegisterSchema(BaseModel):
     phone_number: str
     role: str           # "lecturer" or "coordinator"
     password: str
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        v = v.strip()
+        if len(v) < 2:
+            raise ValueError("Name must be at least 2 characters")
+        if not re.match(r"^[A-Za-z\s]+$", v):
+            raise ValueError("Name can only contain letters and spaces")
+        return v
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        if len(v) < 6:
+            raise ValueError("Password must be at least 6 characters")
+        return v
 
 
 # ── Login ──────────────────────────────────────────────────────────────────

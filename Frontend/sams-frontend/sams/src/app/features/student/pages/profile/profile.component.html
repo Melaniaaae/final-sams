@@ -53,6 +53,14 @@
             <div class="detail-label">Reg. Number</div>
             <div class="detail-val">{{ currentUser?.registrationNumber ?? '—' }}</div>
           </div>
+          <div class="detail-item">
+            <div class="detail-label">Company</div>
+            <div class="detail-val">{{ student?.company || progress?.placement?.companyName || '—' }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Location</div>
+            <div class="detail-val">{{ student?.location || progress?.placement?.location || '—' }}</div>
+          </div>
         </div>
       </div>
 

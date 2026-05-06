@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, throwError, timeout } from 'rxjs';
 import { AuthUser, LoginPayload } from '../../shared/models';
 import { environment } from '../../../environments/environment';
 
@@ -31,6 +31,7 @@ export class AuthService {
     return this.http
       .post<any>(`${environment.apiUrl}/auth/login`, payload)
       .pipe(
+        timeout(10000), // Stop waiting if backend hangs
         tap((res: any) => {
           console.log('Raw login response:', res);
           this.handleAuthSuccess(res);

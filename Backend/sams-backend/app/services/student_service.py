@@ -30,6 +30,7 @@ def get_all_students(
     db: Session,
     search: Optional[str] = None,
     status_filter: Optional[str] = None,
+    supervisor_id: Optional[str] = None,
     page: int = 1,
     page_size: int = 20,
 ) -> dict:
@@ -40,6 +41,9 @@ def get_all_students(
         query = query.filter(
             Student.name.ilike(like) | Student.reg_no.ilike(like)
         )
+        
+    if supervisor_id:
+        query = query.filter(Student.staff_id == supervisor_id)
 
     # Status filter uses placement presence
     if status_filter == "active":

@@ -3,7 +3,7 @@
   <div class="page-header">
     <div>
       <h2 class="page-title">Student Management</h2>
-      <p class="page-sub">{{ total() }} students in the 2025 cohort</p>
+      <p class="page-sub">{{ total }} students in the 2026 cohort</p>
     </div>
     <button class="btn-primary">+ Add Student</button>
   </div>
@@ -14,60 +14,38 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4a6e5a" stroke-width="2">
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input
-        type="text"
-        placeholder="Search by name or reg. number…"
-        [ngModel]="searchQuery()"
-        (ngModelChange)="onSearch($event)"
-      />
+      <input type="text" placeholder="Search by name or reg. number…"
+             [ngModel]="searchQuery" (ngModelChange)="onSearch($event)" />
     </div>
-
     <div class="filter-chips">
-      <button
-        class="chip"
-        [class.active]="statusFilter() === ''"
-        (click)="onStatusFilter('')"
-      >All</button>
-      <button
-        class="chip"
-        [class.active]="statusFilter() === 'active'"
-        (click)="onStatusFilter('active')"
-      >Active</button>
-      <button
-        class="chip"
-        [class.active]="statusFilter() === 'pending'"
-        (click)="onStatusFilter('pending')"
-      >Pending</button>
-      <button
-        class="chip"
-        [class.active]="statusFilter() === 'completed'"
-        (click)="onStatusFilter('completed')"
-      >Completed</button>
+      <button class="chip" [class.active]="statusFilter === ''"          (click)="onStatusFilter('')">All</button>
+      <button class="chip" [class.active]="statusFilter === 'active'"    (click)="onStatusFilter('active')">Active</button>
+      <button class="chip" [class.active]="statusFilter === 'pending'"   (click)="onStatusFilter('pending')">Pending</button>
+      <button class="chip" [class.active]="statusFilter === 'completed'" (click)="onStatusFilter('completed')">Completed</button>
     </div>
   </div>
 
   <!-- Table -->
   <div class="card">
-    <div *ngIf="isLoading()" class="loading-rows">
+    <div *ngIf="isLoading" class="loading-rows">
       <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5]"></div>
     </div>
 
-    <table *ngIf="!isLoading()">
+    <table *ngIf="!isLoading">
       <thead>
         <tr>
           <th>Student</th>
           <th>Reg. No.</th>
-          <th>Company</th>
-          <th>Supervisor</th>
+          <th>School</th>
           <th>Status</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let s of filteredStudents(); trackBy: trackById">
+        <tr *ngFor="let s of filteredStudents; trackBy: trackById">
           <td>
             <div class="student-cell">
-              <div class="avatar">{{ s.name | slice:0:1 }}</div>
+              <div class="avatar">{{ s.name.charAt(0) }}</div>
               <div>
                 <div class="student-name">{{ s.name }}</div>
                 <div class="student-email">{{ s.email }}</div>
@@ -75,22 +53,164 @@
             </div>
           </td>
           <td class="muted">{{ s.registrationNumber }}</td>
-          <td>{{ $any(s).company || '—' }}</td>
-          <td>{{ s.universitySupervisorName || 'Not assigned' }}</td>
+          <td>{{ s.school }}</td>
+          <td><app-status-badge [status]="getStatusVariant(s.status)" /></td>
           <td>
-            <app-status-badge [status]="getStatusVariant(s.status ?? 'pending')" />
-          </td>
-          <td>
-            <button class="row-action">View</button>
+            <button class="row-action" (click)="openStudentDetail(s.registrationNumber)">
+              View
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <!-- Empty state -->
-    <div class="empty-state" *ngIf="!isLoading() && filteredStudents().length === 0">
-      <p>No students match your search.</p>
+    <div class="empty-state" *ngIf="!isLoading && filteredStudents.length === 0">
+      No students match your search.
     </div>
   </div>
+</div>
 
+<!-- ── Student Detail + Assign Supervisor Modal ──────────────────── -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Student Profile</h2>
+      <button class="modal-close" (click)="closeModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div class="modal-loading" *ngIf="loadingStudent">
+      <div class="spinner-ring"></div>
+      <span>Loading student details…</span>
+    </div>
+
+    <!-- Content -->
+    <div class="modal-body" *ngIf="!loadingStudent && selectedStudent">
+
+      <!-- Student info -->
+      <div class="detail-section">
+        <div class="student-hero">
+          <div class="hero-avatar">{{ selectedStudent.name.charAt(0) }}</div>
+          <div>
+            <div class="hero-name">{{ selectedStudent.name }}</div>
+            <div class="hero-reg">{{ selectedStudent.registrationNumber }}</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Email</span>
+            <span class="info-val">{{ selectedStudent.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone</span>
+            <span class="info-val">{{ selectedStudent.phone }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Department</span>
+            <span class="info-val">{{ selectedStudent.department }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status</span>
+            <span class="info-val status-pill" [class]="selectedStudent.status">
+              {{ selectedStudent.status }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placement -->
+      <div class="detail-section" *ngIf="selectedStudent.placement">
+        <div class="section-label">Placement</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Company</span>
+            <span class="info-val">{{ selectedStudent.placement.companyName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Location</span>
+            <span class="info-val">{{ selectedStudent.placement.city }}, {{ selectedStudent.placement.county }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Start Date</span>
+            <span class="info-val">{{ selectedStudent.placement.startDate | date:'MMM d, y' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">End Date</span>
+            <span class="info-val">{{ selectedStudent.placement.endDate | date:'MMM d, y' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Station Supervisor -->
+      <div class="detail-section">
+        <div class="section-label">Station Supervisor</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Name</span>
+            <span class="info-val">{{ selectedStudent.stationSupervisorName ?? '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone</span>
+            <span class="info-val">{{ selectedStudent.stationSupervisorPhone ?? '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- University Supervisor assignment -->
+      <div class="detail-section assign-section">
+        <div class="section-label">University Supervisor</div>
+
+        <!-- Currently assigned -->
+        <div class="assigned-badge" *ngIf="selectedStudent.universitySupervisorName">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a6e3c" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Currently assigned: <strong>{{ selectedStudent.universitySupervisorName }}</strong>
+        </div>
+        <div class="not-assigned" *ngIf="!selectedStudent.universitySupervisorName">
+          No university supervisor assigned yet.
+        </div>
+
+        <!-- Assign form -->
+        <div class="assign-form">
+          <label class="field-label">Select Lecturer to Assign</label>
+          <select class="field-select" [(ngModel)]="selectedLecturerId">
+            <option value="" disabled>— choose a lecturer —</option>
+            <option
+              *ngFor="let lec of lecturers"
+              [value]="lec.id"
+              [disabled]="lec.assignedStudents >= lec.maxStudents && lec.id !== selectedStudent.universitySupervisorId"
+            >
+              {{ lec.name }} — {{ lec.department }}
+              ({{ lec.assignedStudents }}/{{ lec.maxStudents }} students)
+            </option>
+          </select>
+
+          <button
+            class="btn-assign"
+            [disabled]="!selectedLecturerId || assigning"
+           (click)="assignSupervisor()"
+          >
+            <span *ngIf="!assigning">Assign Supervisor</span>
+            <span *ngIf="assigning" class="spinner"></span>
+          </button>
+
+          <div class="assign-success" *ngIf="assignSuccess">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Supervisor assigned successfully! Student's profile has been updated.
+          </div>
+          <div class="assign-error" *ngIf="assignError">{{ assignError }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

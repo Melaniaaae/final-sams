@@ -15,6 +15,18 @@ class StudentOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class PlacementDetail(BaseModel):
+    start_date: str
+    end_date: str
+    company_name: str
+    location: str
+    supervisor_name: str
+    supervisor_phone: str
+
+
+class StudentProfileOut(StudentOut):
+    placement: Optional[PlacementDetail] = None
+    supervisor: Optional[dict] = None
 class StudentUpdate(BaseModel):
     name: Optional[str] = None
     phone_number: Optional[str] = None
